@@ -20,10 +20,20 @@ public class UserController {
     private final UserService userService;
 
 
-    @GetMapping
-    public String getUser(){
-        return "get user was called";
+    @GetMapping(path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<UserResponse> getUser(@PathVariable String id){
+        UserResponse response = new UserResponse();
+        UserDto foundUser = userService.getUserById(id);
+
+        BeanUtils.copyProperties(foundUser, response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
+
+
+
+
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE )
