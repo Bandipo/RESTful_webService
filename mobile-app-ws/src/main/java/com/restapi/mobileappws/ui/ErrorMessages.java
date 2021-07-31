@@ -11,7 +11,8 @@ public enum ErrorMessages {
     COULD_NOT_DELETE_RECORD("Could not delete record"),
     INCORRECT_EMAIL_OR_PASSWORD("Incorrect email or password"),
     USER_NOT_FOUND("User not found"),
-    EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified");
+    EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified"),
+    ADDRESS_OR_ADDRESSES_NOT_FOUND("User address or addresses not found");
 
 
 
