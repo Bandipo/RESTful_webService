@@ -8,7 +8,12 @@ import com.restapi.mobileappws.service.UserService;
 import com.restapi.mobileappws.ui.ErrorMessages;
 import com.restapi.mobileappws.utils.Utility;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
+
+import org.modelmapper.ModelMapper;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -35,11 +42,12 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto user) {
 
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
-            throw new IllegalStateException("User already exist");
+            throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(user, userEntity);
+
+
+        UserEntity userEntity = new ModelMapper().map(user, UserEntity.class);
 
         String publicUserId = utils.generateUserId(25);
         userEntity.setUserId(publicUserId);
@@ -50,27 +58,20 @@ public class UserServiceImpl implements UserService {
 
         UserEntity savedUser = userRepository.save(userEntity);
 
-        UserDto returnedUser = new UserDto();
 
-        BeanUtils.copyProperties(savedUser,returnedUser);
-
-
-
-        return returnedUser;
+        return new ModelMapper().map(savedUser, UserDto.class);
     }
 
     @Override
     public UserDto getUser(String email) {
+
         UserEntity user = userRepository.findByEmail(email).
                 orElseThrow(
                         ()-> new UsernameNotFoundException(email)
                 );
-        UserDto returnValue = new UserDto();
-
-        BeanUtils.copyProperties(user, returnValue);
 
 
-        return returnValue;
+        return new ModelMapper().map(user, UserDto.class);
     }
 
     @Override
@@ -81,13 +82,7 @@ public class UserServiceImpl implements UserService {
                         ()-> new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage())
                 );
 
-        UserDto returnedUser = new UserDto();
-
-        BeanUtils.copyProperties(user, returnedUser);
-
-
-
-        return returnedUser;
+        return new ModelMapper().map(user, UserDto.class);
     }
 
     @Override
@@ -104,10 +99,12 @@ public class UserServiceImpl implements UserService {
         UserEntity savedUser = userRepository.save(foundUser);
         UserDto returnedUseDto = new UserDto();
 
-        returnedUseDto.setUserId(foundUser.getUserId());
-        returnedUseDto.setEmail(foundUser.getEmail());
+        returnedUseDto.setUserId(savedUser.getUserId());
+        returnedUseDto.setEmail(savedUser.getEmail());
         returnedUseDto.setFirstName(savedUser.getFirstName());
         returnedUseDto.setLastName(savedUser.getLastName());
+
+
 
 
 
@@ -127,6 +124,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getListOfUsers(int page , int limit) {
+
+        Pageable pageableRequest = PageRequest.of(page, limit);
+
+        Page<UserEntity> userEntitiesPage = userRepository.findAll(pageableRequest);
+
+        List<UserEntity> userEntities = userEntitiesPage.getContent();
+
+        List<UserDto> userDtos = userEntities.stream().map(
+                (userEntity) -> {
+                    return new ModelMapper().map(userEntity, UserDto.class);
+
+                }
+        ).collect(Collectors.toList());
+
+        return userDtos;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(
@@ -134,6 +150,7 @@ public class UserServiceImpl implements UserService {
                 );
         return  new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
     }
+
 
 
 }
