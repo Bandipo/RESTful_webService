@@ -1,5 +1,6 @@
 package com.restapi.mobileappws.service.implementations;
 
+import com.restapi.mobileappws.SharedDto.AddressDto;
 import com.restapi.mobileappws.SharedDto.UserDto;
 import com.restapi.mobileappws.entity.UserEntity;
 import com.restapi.mobileappws.exceptions.UserServiceException;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 
 import org.modelmapper.ModelMapper;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,18 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
 
+        for(int i=0; i<user.getAddresses().size(); i++){
+
+            AddressDto addressDto = user.getAddresses().get(i);
+
+            addressDto.setUserDetails(user);
+
+            addressDto.setAddressId(utils.generateAddressId(25));
+
+            user.getAddresses().set(i, addressDto);
+
+        }
+
 
 
         UserEntity userEntity = new ModelMapper().map(user, UserEntity.class);
@@ -69,9 +83,11 @@ public class UserServiceImpl implements UserService {
                 orElseThrow(
                         ()-> new UsernameNotFoundException(email)
                 );
+        UserDto userDto = new UserDto();
 
+        BeanUtils.copyProperties(user, userDto);
 
-        return new ModelMapper().map(user, UserDto.class);
+        return userDto;
     }
 
     @Override
@@ -92,6 +108,8 @@ public class UserServiceImpl implements UserService {
                 orElseThrow(
                         () -> new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND.getErrorMessage())
                 );
+
+
 
         foundUser.setFirstName(userDto.getFirstName());
         foundUser.setLastName(userDto.getLastName());
@@ -141,6 +159,7 @@ public class UserServiceImpl implements UserService {
 
         return userDtos;
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

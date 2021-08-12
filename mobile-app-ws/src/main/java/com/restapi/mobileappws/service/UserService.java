@@ -1,5 +1,6 @@
 package com.restapi.mobileappws.service;
 
+import com.restapi.mobileappws.SharedDto.AddressDto;
 import com.restapi.mobileappws.SharedDto.UserDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -17,4 +18,6 @@ public interface UserService extends UserDetailsService {
     void deleteUser(String id);
 
     List<UserDto> getListOfUsers(int page, int limit);
+
+//    List<AddressDto> getUserAddressesByUserId(String userId);
 }

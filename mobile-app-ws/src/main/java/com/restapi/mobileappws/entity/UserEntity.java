@@ -1,16 +1,21 @@
 package com.restapi.mobileappws.entity;
 
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
 @Entity(name = "users")
 public class UserEntity implements Serializable {
 
+    @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
     private static final long serialVersionUID = -741673831079720623L;
 
     @Id
@@ -34,6 +39,10 @@ public class UserEntity implements Serializable {
 
     @Column(nullable = false)
     private Boolean emailVerificationStatus = false;
+
+
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL) // The field that owns the relationship
+    private List<AddressEntity> addresses ;
 
 
 }
