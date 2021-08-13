@@ -17,6 +17,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
     void deleteUserEntityByUserId(String id);
 
 
-
+    Optional<UserEntity> findUserEntityByEmailVerificationToken(String token);
 
 }

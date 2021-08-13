@@ -7,8 +7,11 @@ import com.restapi.mobileappws.SharedDto.UserDto;
 import com.restapi.mobileappws.service.AddressService;
 import com.restapi.mobileappws.service.UserService;
 
+import com.restapi.mobileappws.ui.model.RequestOperationName;
 import com.restapi.mobileappws.ui.model.request.UserDetailsRequestModel;
 import com.restapi.mobileappws.ui.model.response.AddressResponse;
+import com.restapi.mobileappws.ui.model.response.OperationStatusModel;
+import com.restapi.mobileappws.ui.model.response.RequestOperationStatus;
 import com.restapi.mobileappws.ui.model.response.UserResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -174,5 +177,24 @@ public class UserController {
         response.add(selfLink);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+
+    @GetMapping(path = "/email-verification", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token){
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+
+        Boolean isVerified = userService.verifyEmailToken(token);
+
+        if (isVerified) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else {
+            returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+        }
+
+        return returnValue;
+
     }
 }

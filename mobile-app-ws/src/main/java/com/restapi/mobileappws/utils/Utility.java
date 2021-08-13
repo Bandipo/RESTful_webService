@@ -1,8 +1,12 @@
 package com.restapi.mobileappws.utils;
 
+import com.restapi.mobileappws.security.SecurityConstants;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.Random;
 
 @Component
@@ -12,6 +16,7 @@ public class Utility {
     private final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopwxyz";
     private final int ITERATIONS = 10000;
     private final int KEY_LENGTH = 256;
+
 
 
     public String generateUserId(int length){
@@ -33,5 +38,28 @@ public class Utility {
         return new String(returnValue);
     }
 
+    public String generateEmailVerificationToken(String publicUserId) {
+        String token = Jwts.builder()
+                .setSubject(publicUserId)
+                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
+                .compact();
+        return token;
 
+    }
+
+
+    // This is used for the Email verification
+
+    public static Boolean hasTokenExpired(String token) {
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(SecurityConstants.getTokenSecret())
+                .parseClaimsJws(token).getBody();
+
+        Date tokenExpirationDate = claims.getExpiration();
+        Date todayDate = new Date();
+
+        return  tokenExpirationDate.before(todayDate);
+    }
 }

@@ -64,9 +64,13 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = new ModelMapper().map(user, UserEntity.class);
 
         String publicUserId = utils.generateUserId(25);
+
         userEntity.setUserId(publicUserId);
 
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
+        userEntity.setEmailVerificationStatus(false);
 
 
 
@@ -141,6 +145,8 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteUserEntityByUserId(id);
     }
 
+
+
     @Override
     public List<UserDto> getListOfUsers(int page , int limit) {
 
@@ -168,6 +174,34 @@ public class UserServiceImpl implements UserService {
                         ()-> new UsernameNotFoundException(ErrorMessages.INCORRECT_EMAIL_OR_PASSWORD.getErrorMessage())
                 );
         return  new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
+    }
+
+
+    @Override
+    public Boolean verifyEmailToken(String token) {
+        boolean returnValue = false;
+
+        //first find if the user exists
+
+        UserEntity user = userRepository.findUserEntityByEmailVerificationToken(token)
+                .orElseThrow(
+                        () -> new UserServiceException(ErrorMessages.USER_NOT_FOUND.getErrorMessage())
+                );
+
+        //check if the token is still valid
+
+        Boolean hasTokenExpired  = Utility.hasTokenExpired(token);
+
+        //returns true if the token has expired
+
+        if(!hasTokenExpired){
+            user.setEmailVerificationToken(null); // we delete the emailverification token
+            user.setEmailVerificationStatus(true);// the email is verified
+            userRepository.save(user); //save the user back
+            returnValue = true;
+        }
+
+        return returnValue;
     }
 
 
