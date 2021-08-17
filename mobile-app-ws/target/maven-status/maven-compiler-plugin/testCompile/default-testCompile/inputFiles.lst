@@ -1,1 +1,3 @@
-/Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/test/java/com/restapi/mobileappws/MobileAppWsApplicationTests.java
+/Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/test/java/com/restapi/mobileappws/utils/UtilityClassTest.java
+/Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/test/java/com/restapi/mobileappws/implementations/UserServiceImplTest.java
+/Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/test/java/com/restapi/mobileappws/controller/UserControllerTest.java

@@ -7,6 +7,7 @@ import com.restapi.mobileappws.entity.UserEntity;
 import com.restapi.mobileappws.exceptions.UserServiceException;
 import com.restapi.mobileappws.repositories.UserRepository;
 import com.restapi.mobileappws.service.implementations.UserServiceImpl;
+import com.restapi.mobileappws.ui.model.request.AddressRequestModel;
 import com.restapi.mobileappws.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.*;
 class UserServiceImplTest {
 
     @InjectMocks
-    UserServiceImpl userService;
+    UserServiceImpl userService; // we inject mocks into the service under test
 
 
 
@@ -73,6 +74,7 @@ class UserServiceImplTest {
         userEntity.setEncryptedPassword(encryptedPassword);
         userEntity.setEmail(userEmail);
         userEntity.setEmailVerificationToken("eildfj");
+        userEntity.setEmailVerificationStatus(true);
         userEntity.setAddresses(getAddressEntity());
 
         //UserDto
@@ -127,7 +129,7 @@ class UserServiceImplTest {
     @Test
     void testCreateUser(){
 
-
+        //when we call the dependencies methods
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(utils.generateUserId(anyInt())).thenReturn(userId);
@@ -141,7 +143,7 @@ class UserServiceImplTest {
 
 
 
-
+        //Given that we call the Method of the class under test
 
         UserDto storedUser = userService.createUser(userDto);
 
@@ -153,19 +155,21 @@ class UserServiceImplTest {
         assertNotNull(storedUser.getUserId());
         assertEquals(storedUser.getAddresses().size(), userEntity.getAddresses().size());
 
+        //Then verify that the following methods were called this no of times when given the parameters
         verify(utils,times(1)).generateUserId(25);//TODO: ought to work for 2
         verify(bCryptPasswordEncoder,times(1)).encode("taiye12345");
         verify(utils, times(1)).generateUserId(25);
         verify(userRepository, times(1)).save(any(UserEntity.class));
+        verify(userRepository, times(1)).findByEmail(anyString());// but you can supply an email if you want
     }
 
     @Test
-    void testCreateUser_IllegalStateException(){
+    void testCreateUser_UserServiceException(){
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(this.userEntity));
 
 
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(UserServiceException.class,
                 ()-> userService.createUser(userDto)
                 );
     }
@@ -196,7 +200,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateUser(){
+    void testUpdateUser(){// This one here really shows the power of mockito
 
         //Given
 
@@ -213,7 +217,10 @@ class UserServiceImplTest {
         UserDto updatedUserDto = userService.updateUser(userId, userDto);
 
         //Then
+        log.info("UpdatedUserFirstNameRequest: {}", updatedUserDto.getFirstName());
+        log.info("UpdatedUserFirstNameSaved: {}", userEntity.getFirstName());
 
+        assertEquals(updatedUserDto.getFirstName(), userEntity.getFirstName());
         assertEquals(updatedUserDto.getUserId(), userEntity.getUserId());//calls Method under Test
         verify(userRepository, times(1)).findByUserId(anyString());
         verify(userRepository, times(1)).save(any(UserEntity.class));

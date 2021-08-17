@@ -12,7 +12,8 @@ import java.util.List;
 
 
 @Data
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class UserEntity implements Serializable {
 
     @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)

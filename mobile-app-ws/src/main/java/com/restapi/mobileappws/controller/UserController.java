@@ -87,11 +87,14 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id){
+    public ResponseEntity<OperationStatusModel> deleteUser(@PathVariable String id){
+
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.DELETED.name() + " User with the ID: "+ id);
 
         userService.deleteUser(id);
 
-        return new ResponseEntity<>(String.format(" Deleted User with the ID: %s ", id), HttpStatus.OK);
+        return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

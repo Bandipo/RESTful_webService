@@ -1,6 +1,6 @@
 package com.restapi.mobileappws.ui.model;
 
 public enum RequestOperationName {
-    DELETE,
+    DELETED,
     VERIFY_EMAIL;
 }

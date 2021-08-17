@@ -1,5 +1,9 @@
 package com.restapi.mobileappws.utils;
 
+import com.restapi.mobileappws.security.SecurityConstants;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,29 +46,41 @@ class UtilityClassTest {
        );
     }
 
-//    @Test
-//    void hasTokenNotExpired() {
-//        String token = utility.generateEmailVerificationToken("3234dfjkld");
-//
-//        Boolean hasTokenExpired = Utility.hasTokenExpired(token);
-//
-//        assertAll(
-//                ()->{
-//                    assertNotNull(token);
-//                    assertFalse(hasTokenExpired);
-//                }
-//        );
-//    }
+    @Test
+    void hasTokenNotExpired() {
+        String token = utility.generateEmailVerificationToken("3234dfjkld");
 
-//    @Test
-//    @Disabled
-//     void hasTokenExpired(){
-//        String expiredToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MUB0ZXN0LmNvbSIsImV4cCI6MTUzMjc3Nzc3NX0." +
-//                "cdudUo3pwZLN9UiTuXiT7itpaQs6BgUPU0yWbNcz56-l1Z0476N3H_qSEHXQI5lUfaK2ePtTWJfROmf0213UJA";
-//
-//        Boolean hasTokenExpired = Utility.hasTokenExpired(expiredToken);
-//
-//        assertTrue(hasTokenExpired);
-//
-//    }
+
+
+        Boolean hasTokenExpired = Utility.hasTokenExpired(token);
+
+        assertAll(
+                ()->{
+                    assertNotNull(token);
+                    assertFalse(hasTokenExpired);
+                }
+        );
+    }
+
+    @Test
+
+     void hasTokenExpired(){
+        String expiredToken = generateExpiredEmailVerificationTokenForTest("dkdlf");
+
+        Boolean hasTokenExpired = Utility.hasTokenExpired(expiredToken);
+
+        assertTrue(hasTokenExpired);
+
+    }
+
+
+    private static String generateExpiredEmailVerificationTokenForTest(String publicUserId) {
+        String token = Jwts.builder()
+                .setSubject(publicUserId)
+                .setExpiration(new Date(System.currentTimeMillis() - 1000))// this makes the token expire
+                .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
+                .compact();
+        return token;
+
+    }
 }

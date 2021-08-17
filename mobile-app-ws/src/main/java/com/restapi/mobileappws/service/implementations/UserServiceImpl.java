@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final Utility utils;
+//    private final AmazonSES amazonSES;
 
 
     @Override
@@ -76,8 +77,12 @@ public class UserServiceImpl implements UserService {
 
         UserEntity savedUser = userRepository.save(userEntity);
 
+        UserDto returnValue = new ModelMapper().map(savedUser, UserDto.class);
 
-        return new ModelMapper().map(savedUser, UserDto.class);
+//        // Send an email message to user to verify their email address
+//        amazonSES.verifyEmail(returnValue);
+
+        return returnValue ;
     }
 
     @Override
@@ -126,7 +131,13 @@ public class UserServiceImpl implements UserService {
         returnedUseDto.setFirstName(savedUser.getFirstName());
         returnedUseDto.setLastName(savedUser.getLastName());
 
+        List<AddressDto> addressDto = savedUser.getAddresses().stream().map(
+                (addresses) -> {
+                 return new ModelMapper().map(addresses, AddressDto.class);
+                }
+        ).collect(Collectors.toList());
 
+        returnedUseDto.setAddresses(addressDto);
 
 
 
@@ -173,7 +184,9 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(
                         ()-> new UsernameNotFoundException(ErrorMessages.INCORRECT_EMAIL_OR_PASSWORD.getErrorMessage())
                 );
-        return  new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
+        return new User(user.getEmail(), user.getEncryptedPassword(), user.getEmailVerificationStatus(), true,
+                true, true, new ArrayList<>());
+//        return  new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
     }
 
 
