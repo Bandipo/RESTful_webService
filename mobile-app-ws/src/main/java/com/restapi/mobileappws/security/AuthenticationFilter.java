@@ -36,8 +36,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response)
+
                                                 throws AuthenticationException {
 
+
+
+// before authentication, we have to get the credentials from the request...
+        // copy the credentials to UserLoginReqestModel
         try{
             UserLoginRequestModel credentials = new ObjectMapper()
                     .readValue(request.getInputStream(), UserLoginRequestModel.class);

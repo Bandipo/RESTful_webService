@@ -44,9 +44,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto user) {
 
+        //checks if the user is already in the database
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
+
+        //sets the userDto on each Address on the fly; also sets the generated address entity
 
         for(int i=0; i<user.getAddresses().size(); i++){
 
@@ -61,22 +64,28 @@ public class UserServiceImpl implements UserService {
         }
 
 
-
+        // copies the userDto into the UserEntity
         UserEntity userEntity = new ModelMapper().map(user, UserEntity.class);
 
+        //generate UserId before saving the User
         String publicUserId = utils.generateUserId(25);
 
+        //sets the generated Userid
         userEntity.setUserId(publicUserId);
 
+        //Encrypts the password
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
+        //Generate and set email verification token
         userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
+        //set emailVerification Status
         userEntity.setEmailVerificationStatus(false);
 
 
-
+        //then save the user
         UserEntity savedUser = userRepository.save(userEntity);
 
+        //copy the saved user into a UserDto to the controller
         UserDto returnValue = new ModelMapper().map(savedUser, UserDto.class);
 
 //        // Send an email message to user to verify their email address
@@ -184,6 +193,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(
                         ()-> new UsernameNotFoundException(ErrorMessages.INCORRECT_EMAIL_OR_PASSWORD.getErrorMessage())
                 );
+        //user.getEmailVerificationStatus() replaces isEnabled of UserDetails
         return new User(user.getEmail(), user.getEncryptedPassword(), user.getEmailVerificationStatus(), true,
                 true, true, new ArrayList<>());
 //        return  new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
