@@ -75,4 +75,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
     @Modifying
     @Query("update UserEntity user set user.firstName = :firstName where user.userId= :userId")
     void updateUserFirstName(@Param(value = "firstName") String firstName, @Param(value = "userId") String userId);
+
+    boolean existsUserEntitiesByEmail(String email);
 }

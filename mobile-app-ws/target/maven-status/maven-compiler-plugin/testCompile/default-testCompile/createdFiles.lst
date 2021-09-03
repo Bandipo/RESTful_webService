@@ -1,3 +1,8 @@
+com/restapi/mobileappws/repositories/UserRepositoryTest.class
+com/restapi/mobileappws/restAssured/UserWebServiceEndpointTest.class
 com/restapi/mobileappws/utils/UtilityClassTest.class
-com/restapi/mobileappws/implementations/UserServiceImplTest.class
+com/restapi/mobileappws/TestUtility.class
+com/restapi/mobileappws/service/implementations/AddressServiceImplTest.class
 com/restapi/mobileappws/controller/UserControllerTest.class
+com/restapi/mobileappws/restAssured/TestCreateUser.class
+com/restapi/mobileappws/implementations/UserServiceImplTest.class

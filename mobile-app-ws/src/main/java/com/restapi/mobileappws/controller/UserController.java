@@ -14,7 +14,11 @@ import com.restapi.mobileappws.ui.model.response.OperationStatusModel;
 import com.restapi.mobileappws.ui.model.response.RequestOperationStatus;
 import com.restapi.mobileappws.ui.model.response.UserResponse;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.hateoas.CollectionModel;
@@ -23,6 +27,9 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,15 +39,26 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("users")//http://localhost:2009/users
 @RequiredArgsConstructor
-public class UserController {
+@Slf4j
+class UserController {
 
     private final UserService userService;
     private final AddressService addressService;
 
 
+
+    //The method will be executed first, then the security expression will be validated
+    @PostAuthorize("returnObject.body.userId == principal.userId")//
+    @ApiOperation(value="The Get User Details Web Service Endpoint",
+            notes="${userController.GetUser.ApiOperation.Notes}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+    })
     @GetMapping(path = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<UserResponse> getUser(@PathVariable String id){
+
+        log.debug("getUser Request Mapper called");
 
         UserDto foundUser = userService.getUserById(id);
 
@@ -70,14 +88,20 @@ public class UserController {
 
 
 
-
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+    })
     @PutMapping(path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public  ResponseEntity<UserResponse> updateUser(@Valid @PathVariable String id, @RequestBody UserDetailsRequestModel requestModel){
 
-        UserDto userDto = new ModelMapper().map(requestModel, UserDto.class);
+        System.out.println("in updateUser RequestMethod Handler");
 
+        System.out.printf("Pathvariable: userId: %s", id);
+
+        UserDto userDto = new ModelMapper().map(requestModel, UserDto.class);
+        System.out.printf("\n userTobeUpdatedFirstName : %s",userDto.getFirstName());
         UserDto updatedUserDto = userService.updateUser(id, userDto);
 
         UserResponse userResponse = new ModelMapper().map(updatedUserDto, UserResponse.class);
@@ -85,6 +109,25 @@ public class UserController {
 
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
+
+
+
+//Pre/PostAuthorize support method security expressions while @Secured does not
+//    @Secured("ROLE_ADMIN")//use the names in database if it's Roles or Authority based
+
+//    @PreAuthorize("hasAuthority('DELETE_AUTHORITY')")/*that preauthorize annotation decides whether a method can actually be invoked or not,
+//    and if the expression that we are going to type inside of the pre authorized  annotation suggests
+//    that the currently authenticated user is not allowed to execute this method, then
+//a method will be executed at all.*/
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id == principal.userId")//if the user has ADMINROLE or is a currently logged in User
+
+
+
+    //we should not use post authorize on delete because the data will first be deleted before the exp validates
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+    })
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<OperationStatusModel> deleteUser(@PathVariable String id){
@@ -97,6 +140,9 @@ public class UserController {
         return new ResponseEntity<>(returnValue, HttpStatus.OK);
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+    })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserResponse>> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                        @RequestParam(value = "limit", defaultValue = "10") int limit){
@@ -113,6 +159,10 @@ public class UserController {
 
     }
 
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+    })
     //http://localhost:2009/mobile-app-ws/users/userId/addresses
     @GetMapping(path ="/{userId}/addresses" ,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUserAddresses(@PathVariable String userId){
@@ -146,6 +196,11 @@ public class UserController {
         return new ResponseEntity<>(CollectionModel.of(addressResponse, userLink, selfLink), HttpStatus.OK);
     }
 
+
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+    })
     //http://localhost:2009/mobile-app-ws/users/userId/addreses/addressId
     @GetMapping(path = "/{userId}/addresses/{addressId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AddressResponse> getUserAddress(@PathVariable String userId,
@@ -181,6 +236,7 @@ public class UserController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
 

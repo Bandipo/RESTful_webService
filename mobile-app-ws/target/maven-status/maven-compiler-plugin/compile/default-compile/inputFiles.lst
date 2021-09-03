@@ -24,8 +24,10 @@
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/exceptions/AppsExceptionHandlers.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/repositories/UserRepository.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/service/implementations/AddressServiceImpl.java
+/Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/SharedDto/AmazonSES.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/security/AuthenticationFilter.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/entity/UserEntity.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/SpringApplicationContext.java
+/Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/configuration/WebConfig.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/service/UserService.java
 /Users/decagon/Documents/SergeyTutorialsPushedToGit/RESTful_webService/mobile-app-ws/src/main/java/com/restapi/mobileappws/service/implementations/UserServiceImpl.java

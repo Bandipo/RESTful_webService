@@ -8,6 +8,7 @@ com/restapi/mobileappws/entity/UserEntity.class
 com/restapi/mobileappws/service/implementations/AddressServiceImpl.class
 com/restapi/mobileappws/ui/model/response/AddressResponse.class
 com/restapi/mobileappws/utils/Utility.class
+com/restapi/mobileappws/configuration/WebConfig.class
 com/restapi/mobileappws/ui/ErrorMessages.class
 com/restapi/mobileappws/SharedDto/AddressDto.class
 com/restapi/mobileappws/ui/model/response/ErrorMessage$ErrorMessageBuilder.class

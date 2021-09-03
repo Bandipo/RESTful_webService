@@ -7,6 +7,7 @@ import com.restapi.mobileappws.service.UserService;
 import com.restapi.mobileappws.ui.model.request.UserLoginRequestModel;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-
+@Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -53,7 +54,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                             credentials.getPassword(),
                             new ArrayList<>()
                     )
-            );
+            );//Spring frame work validates user name and password against the one
+            //we av in database
 
 
         }catch (IOException e){
@@ -64,6 +66,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     }
 
+
+    //if user is authenticated this function is called
+    //here we generate jwt token
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
@@ -71,24 +76,30 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             throws IOException, ServletException {
 
 
-        String userName = ((User) authResult.getPrincipal()).getUsername();
+        String userName = ((UserPrincipal) authResult.getPrincipal()).getUsername(); //user's email
+
+
 
         //String tokenSecret = new SecurityConstants.getTokenSecret();
 
+        //Generate token
         String token = Jwts.builder()
-                       .setSubject(userName)
+                       .setSubject(userName) //the subject is user's email
                        .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                        .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
                        .compact();
 
         //this gets userServiceImp Bean from Application context class
+        //we can get any registered spring bean with SpringApplicationContext
 
         UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
 
-        UserDto userDto = userService.getUser(userName);
+        UserDto userDto = userService.getUser(userName);// we get the user by his email
+
+        //set the token and userId in the response Header
 
         response.addHeader(SecurityConstants.HEADER_String, SecurityConstants.TOKEN_PREFIX + token);
-        response.addHeader("UserID", userDto.getUserId());
+        response.addHeader("UserID", userDto.getUserId()); //
 
 
 

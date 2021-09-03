@@ -1,21 +1,30 @@
 package com.restapi.mobileappws.service.implementations;
 
 import com.restapi.mobileappws.SharedDto.AddressDto;
+import com.restapi.mobileappws.SharedDto.RoleDto;
+import com.restapi.mobileappws.SharedDto.Roles;
 import com.restapi.mobileappws.SharedDto.UserDto;
+import com.restapi.mobileappws.entity.AuthorityEntity;
+import com.restapi.mobileappws.entity.RolesEntity;
 import com.restapi.mobileappws.entity.UserEntity;
 import com.restapi.mobileappws.exceptions.UserServiceException;
 import com.restapi.mobileappws.repositories.UserRepository;
+import com.restapi.mobileappws.security.UserPrincipal;
+import com.restapi.mobileappws.security.UserPrincipal;
 import com.restapi.mobileappws.service.UserService;
 import com.restapi.mobileappws.ui.ErrorMessages;
 import com.restapi.mobileappws.utils.Utility;
 import lombok.AllArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,14 +32,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -63,6 +71,7 @@ public class UserServiceImpl implements UserService {
 
         }
 
+        user.setRoles(List.of(new RoleDto(Roles.ROLE_USER.name())));// set role to every user
 
         // copies the userDto into the UserEntity
         UserEntity userEntity = new ModelMapper().map(user, UserEntity.class);
@@ -121,24 +130,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(String userId, UserDto userDto) {
+        //get the user to be updated
+
+        System.out.printf("\n updatedUser called in service request : %s ", userDto.getFirstName());
+        System.out.printf("\n In updaterUser Service \n UserId from request: %s", userId);
+
+        System.out.println( userRepository.existsUserByUserId(userId));
 
         UserEntity foundUser = userRepository.findByUserId(userId).
                 orElseThrow(
-                        () -> new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND.getErrorMessage())
+                        () -> new UserServiceException(ErrorMessages.USER_NOT_FOUND.getErrorMessage())
                 );
 
 
+        System.out.printf("user is found: %s", foundUser.getFirstName());
+
+        //set the fields to be updated
 
         foundUser.setFirstName(userDto.getFirstName());
         foundUser.setLastName(userDto.getLastName());
 
+        //save the user or add @Transactional on the Class, which allows automatic persistence
         UserEntity savedUser = userRepository.save(foundUser);
-        UserDto returnedUseDto = new UserDto();
+        UserDto returnedUserDto = new UserDto();
 
-        returnedUseDto.setUserId(savedUser.getUserId());
-        returnedUseDto.setEmail(savedUser.getEmail());
-        returnedUseDto.setFirstName(savedUser.getFirstName());
-        returnedUseDto.setLastName(savedUser.getLastName());
+        returnedUserDto.setUserId(savedUser.getUserId());
+        returnedUserDto.setEmail(savedUser.getEmail());
+        returnedUserDto.setFirstName(savedUser.getFirstName());
+        returnedUserDto.setLastName(savedUser.getLastName());
 
         List<AddressDto> addressDto = savedUser.getAddresses().stream().map(
                 (addresses) -> {
@@ -146,12 +165,10 @@ public class UserServiceImpl implements UserService {
                 }
         ).collect(Collectors.toList());
 
-        returnedUseDto.setAddresses(addressDto);
+        returnedUserDto .setAddresses(addressDto);
 
 
-
-
-        return returnedUseDto;
+        return returnedUserDto;
     }
 
 
@@ -187,6 +204,8 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    //Spring framework calls this function when post request is send for user Authentication
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmail(email)
@@ -194,8 +213,26 @@ public class UserServiceImpl implements UserService {
                         ()-> new UsernameNotFoundException(ErrorMessages.INCORRECT_EMAIL_OR_PASSWORD.getErrorMessage())
                 );
         //user.getEmailVerificationStatus() replaces isEnabled of UserDetails
-        return new User(user.getEmail(), user.getEncryptedPassword(), user.getEmailVerificationStatus(), true,
-                true, true, new ArrayList<>());
+
+//        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+
+       /* user.getRoles().stream().map(
+                RolesEntity::getAuthorities).forEach(
+                       authorities -> {
+                           authorities.forEach(
+                                   authorityEntity -> grantedAuthorities.add(new SimpleGrantedAuthority(authorityEntity.getName()))
+                           );
+
+                       }
+        );*/
+
+
+        return new UserPrincipal(user);
+
+
+
+//        return new User(user.getEmail(), user.getEncryptedPassword(), user.getEmailVerificationStatus(), true,
+//                true, true, grantedAuthorities);
 //        return  new User(user.getEmail(), user.getEncryptedPassword(), new ArrayList<>());
     }
 

@@ -1,0 +1,31 @@
+
+
+
+                                                                    dddddddd
+BBBBBBBBBBBBBBBBB                                                   d::::::d  iiii
+B::::::::::::::::B                                                  d::::::d i::::i
+B::::::BBBBBB:::::B                                                 d::::::d  iiii
+BB:::::B     B:::::B                                                d:::::d
+  B::::B     B:::::B  aaaaaaaaaaaaa   nnnn  nnnnnnnn        ddddddddd:::::d iiiiiii ppppp   ppppppppp      ooooooooooo
+  B::::B     B:::::B  a::::::::::::a  n:::nn::::::::nn    dd::::::::::::::d i:::::i p::::ppp:::::::::p   oo:::::::::::oo
+  B::::BBBBBB:::::B   aaaaaaaaa:::::a n::::::::::::::nn  d::::::::::::::::d  i::::i p:::::::::::::::::p o:::::::::::::::o
+  B:::::::::::::BB             a::::a nn:::::::::::::::nd:::::::ddddd:::::d  i::::i pp::::::ppppp::::::po:::::ooooo:::::o
+  B::::BBBBBB:::::B     aaaaaaa:::::a   n:::::nnnn:::::nd::::::d    d:::::d  i::::i  p:::::p     p:::::po::::o     o::::o
+  B::::B     B:::::B  aa::::::::::::a   n::::n    n::::nd:::::d     d:::::d  i::::i  p:::::p     p:::::po::::o     o::::o
+  B::::B     B:::::B a::::aaaa::::::a   n::::n    n::::nd:::::d     d:::::d  i::::i  p:::::p     p:::::po::::o     o::::o
+  B::::B     B:::::Ba::::a    a:::::a   n::::n    n::::nd:::::d     d:::::d  i::::i  p:::::p    p::::::po::::o     o::::o
+BB:::::BBBBBB::::::Ba::::a    a:::::a   n::::n    n::::nd::::::ddddd::::::ddi::::::i p:::::ppppp:::::::po:::::ooooo:::::o
+B:::::::::::::::::B a:::::aaaa::::::a   n::::n    n::::n d:::::::::::::::::di::::::i p::::::::::::::::p o:::::::::::::::o
+B::::::::::::::::B   a::::::::::aa:::a  n::::n    n::::n  d:::::::::ddd::::di::::::i p::::::::::::::pp   oo:::::::::::oo
+BBBBBBBBBBBBBBBBB     aaaaaaaaaa  aaaa  nnnnnn    nnnnnn   ddddddddd   dddddiiiiiiii p::::::pppppppp       ooooooooooo
+                                                                                     p:::::p
+                                                                                     p:::::p
+                                                                                    p:::::::p
+                                                                                    p:::::::p
+                                                                                    p:::::::p
+                                                                                    ppppppppp
+
+█
+
+ ::Built With Spring Boot :: ${spring-boot.version}
+

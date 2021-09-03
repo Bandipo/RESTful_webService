@@ -1,11 +1,13 @@
 package com.restapi.mobileappws.security;
 
+import com.restapi.mobileappws.repositories.UserRepository;
 import com.restapi.mobileappws.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,12 +20,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @Configuration
+@EnableGlobalMethodSecurity(
+        securedEnabled = true,
+        prePostEnabled = true
+)
 @EnableWebSecurity
 @AllArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserService userDetailsService;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -38,10 +45,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(SecurityConstants.H2_CONSOLE)
                 .permitAll()
+                .antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**")
+                .permitAll()//the lines are commented out so we could use Method level security
+//                .antMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN") //using Roles base auth; "ROLE_ADMIN" in database
+//                .antMatchers(HttpMethod.DELETE,"/users/**").hasAuthority("DELETE_AUTHORITY")// DELETE in database
                 .anyRequest().authenticated()// at this point authentication begins
                 .and()
                 .addFilter(getAuthenticationFilter())
-                .addFilter(new AuthorizationFilter(authenticationManager()))
+                .addFilter(new AuthorizationFilter(authenticationManager(), userRepository))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

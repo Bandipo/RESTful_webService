@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -25,6 +26,7 @@ public class UserDto implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
+    private Collection<RoleDto> roles;
 
     private List<AddressDto> addresses;
 }
