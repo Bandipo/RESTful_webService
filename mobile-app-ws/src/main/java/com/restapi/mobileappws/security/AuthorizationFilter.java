@@ -1,5 +1,6 @@
 package com.restapi.mobileappws.security;
 
+import com.restapi.mobileappws.SpringApplicationContext;
 import com.restapi.mobileappws.entity.UserEntity;
 import com.restapi.mobileappws.exceptions.UserServiceException;
 import com.restapi.mobileappws.repositories.UserRepository;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.Jwts;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -20,16 +22,17 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.*;
 import java.io.IOException;
 
 
 //for every request after user authentication
 @Slf4j
 public class AuthorizationFilter extends BasicAuthenticationFilter {
-    private final UserRepository userRepository;
-    public AuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+//    private final UserRepository userRepository;
+    public AuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
-        this.userRepository = userRepository;
+
 
 
     }
@@ -76,9 +79,16 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
             if(username != null){
 
+                UserRepository userRepository = (UserRepository) SpringApplicationContext.getBean("userRepository");
+
+
+
+
                 UserEntity user = userRepository.findByEmail(username).orElseThrow(
                         () -> new UserServiceException(ErrorMessages.USER_NOT_FOUND.getErrorMessage())
                 );
+
+                log.info("Inside Authorization ()=> user: {}", user.getEmail());
 
                 if(user==null) return null;
 

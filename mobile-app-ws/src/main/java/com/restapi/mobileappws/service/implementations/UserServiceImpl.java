@@ -132,10 +132,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(String userId, UserDto userDto) {
         //get the user to be updated
 
-        System.out.printf("\n updatedUser called in service request : %s ", userDto.getFirstName());
-        System.out.printf("\n In updaterUser Service \n UserId from request: %s", userId);
 
-        System.out.println( userRepository.existsUserByUserId(userId));
 
         UserEntity foundUser = userRepository.findByUserId(userId).
                 orElseThrow(
@@ -143,7 +140,7 @@ public class UserServiceImpl implements UserService {
                 );
 
 
-        System.out.printf("user is found: %s", foundUser.getFirstName());
+
 
         //set the fields to be updated
 

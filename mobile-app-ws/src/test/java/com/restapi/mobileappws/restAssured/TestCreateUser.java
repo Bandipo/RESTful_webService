@@ -29,6 +29,8 @@ public class TestCreateUser {
     @Test
     void createUser(){
 
+        // First we model the request
+
         List<Map<String, Object>> userAddresses = new ArrayList<>();
 
         Map<String, Object> shippingAddress = new HashMap<>();
@@ -57,6 +59,7 @@ public class TestCreateUser {
         userDetails.put("addresses", userAddresses);
 
 
+// then we make the request
         Response response = given()
                 .contentType("application/json") //set contentType
                 .accept("application/json") // set acceptType
@@ -69,7 +72,7 @@ public class TestCreateUser {
                 .extract()
                 .response();
 
-        // we get userId from the response body
+        // we get userId  and email from the response header
 
         String userId = response.jsonPath().get("userId");
 

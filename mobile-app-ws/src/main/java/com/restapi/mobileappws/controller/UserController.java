@@ -96,12 +96,10 @@ class UserController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public  ResponseEntity<UserResponse> updateUser(@Valid @PathVariable String id, @RequestBody UserDetailsRequestModel requestModel){
 
-        System.out.println("in updateUser RequestMethod Handler");
 
-        System.out.printf("Pathvariable: userId: %s", id);
 
         UserDto userDto = new ModelMapper().map(requestModel, UserDto.class);
-        System.out.printf("\n userTobeUpdatedFirstName : %s",userDto.getFirstName());
+
         UserDto updatedUserDto = userService.updateUser(id, userDto);
 
         UserResponse userResponse = new ModelMapper().map(updatedUserDto, UserResponse.class);
@@ -118,7 +116,7 @@ class UserController {
 //    @PreAuthorize("hasAuthority('DELETE_AUTHORITY')")/*that preauthorize annotation decides whether a method can actually be invoked or not,
 //    and if the expression that we are going to type inside of the pre authorized  annotation suggests
 //    that the currently authenticated user is not allowed to execute this method, then
-//a method will be executed at all.*/
+//a method will not be executed at all.*/
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or #id == principal.userId")//if the user has ADMINROLE or is a currently logged in User
 
@@ -159,7 +157,7 @@ class UserController {
 
     }
 
-
+// this should be preAuthorize for the Admin or the user with Id
     @ApiImplicitParams({
             @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
     })

@@ -14,9 +14,9 @@ import java.util.List;
 
 public class UserDetailsRequestModel {
 
-//
-//    @NotNull(message="First name cannot be missing or empty")
-//    @Size(min=2, message="First name must not be less than 2 characters")
+
+    @NotNull(message="First name cannot be missing or empty")
+    @Size(min=2, message="First name must not be less than 2 characters")
     private String firstName;
 
     @NotNull(message="Last name cannot be missing or empty")

@@ -17,11 +17,24 @@ public class AddressEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 30, nullable = false)
     private String addressId;
+
+    @Column(length = 100, nullable = false)
     private String streetName;
+
+    @Column(length = 15, nullable = false)
     private String city;
+
+    @Column(length = 15, nullable = false)
     private String country;
+
+    @Column(length =10 , nullable = false)
     private String postalCode;
+
+    @Column(length = 15, nullable = false)
+
     private String type;
 
     @ManyToOne()

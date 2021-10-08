@@ -111,6 +111,7 @@ class UserServiceImplTest {
        assertEquals(user.getFirstName(), optionalUserEntity.get().getFirstName());
 
 
+
     }
 
     @Test
@@ -157,7 +158,7 @@ class UserServiceImplTest {
         assertEquals(storedUser.getAddresses().size(), userEntity.getAddresses().size());
 
         //Then verify that the following methods were called this no of times when given the parameters
-        verify(utils,times(1)).generateUserId(25);//TODO: ought to work for 2
+        verify(utils,times(2)).generateAddressId(25);
         verify(bCryptPasswordEncoder,times(1)).encode("taiye12345");
         verify(utils, times(1)).generateUserId(25);
         verify(userRepository, times(1)).save(any(UserEntity.class));
@@ -194,7 +195,7 @@ class UserServiceImplTest {
 
         assertThrows(UserServiceException.class,
 
-                ()-> userService.deleteUser(userId)
+                ()-> userService.deleteUser(userId)// call the Service method under test
 
                 );
 

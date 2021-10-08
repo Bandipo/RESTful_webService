@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserService userDetailsService;
-    private final UserRepository userRepository;
+//    private final UserRepository userRepository;
 
 
     @Override
@@ -52,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()// at this point authentication begins
                 .and()
                 .addFilter(getAuthenticationFilter())
-                .addFilter(new AuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(new AuthorizationFilter(authenticationManager()))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
