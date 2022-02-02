@@ -22,7 +22,7 @@ public class UserEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; //the same is used at the users_roles refrenced column
+    private Long id; //the same is used at the users_roles referenced column
 
     @Column(nullable = false)
     private String userId;

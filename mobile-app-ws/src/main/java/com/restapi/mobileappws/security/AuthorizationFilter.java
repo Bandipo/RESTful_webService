@@ -33,8 +33,6 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     public AuthorizationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
 
-
-
     }
 
 

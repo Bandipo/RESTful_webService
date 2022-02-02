@@ -1,6 +1,6 @@
 package com.restapi.mobileappws.security;
 
-import com.restapi.mobileappws.repositories.UserRepository;
+
 import com.restapi.mobileappws.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
