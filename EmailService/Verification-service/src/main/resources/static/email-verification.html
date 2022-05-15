@@ -16,7 +16,7 @@
 
             function verifyToken(tokenValue)
             {
-                $.get('http://ec2-35-173-238-100.compute-1.amazonaws.com:8080/mobile-app-ws/users/email-verification', {token: tokenValue})
+                $.get('http://local:2009/mobile-app-ws/users/email-verification', {token: tokenValue})
                     .done(function (response) {
 
                         if (response["operationResult"] === "SUCCESS")
